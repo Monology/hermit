@@ -1,0 +1,4 @@
+name: Hermit
+version: 1.0.0
+main: hermit.self.Hermit
+api-version: 1.16
