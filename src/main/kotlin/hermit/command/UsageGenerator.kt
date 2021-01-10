@@ -90,6 +90,5 @@ fun generateCommandUsage(
     return generateCommandUsage(label, a1, a2, a3, a4, a5, a6, a7) + " ${a8.usage}"
 }
 
-private val Argument<*>.usage get(): String {
-    return "<" + (if (name != null) "$name: " else "") + typeName + ">"
-}
+private val Argument<*>.usage
+    get() = "<$name>"

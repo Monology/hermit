@@ -85,10 +85,6 @@ val Double.weeks get() = days * 7
 val Double.months get() = days * 30
 val Double.years get() = days * 365
 
-fun Player.openGui(gui: GUI) {
-
-}
-
 fun CommandSender.msg(any: Any?) = sendMessage(any.toString())
 
 fun CommandSender.msg(any: Array<Any?>?) {
@@ -99,14 +95,18 @@ fun CommandSender.msg(any: Array<Any?>?) {
 
 val onlinePlayers: Collection<Player> get() = Bukkit.getOnlinePlayers()
 
+fun Iterable<Player>.withPermission(permission: String) =
+    filter { it.hasPermission(permission) }
+
+fun Iterable<Player>.withPermissionOrOp(permission: String?)
+    = filter { player -> permission?.let { player.hasPermission(it) } ?: player.isOp }
+
 fun checkForUpdates(plugin: HermitPlugin, id: Int, message: String, permission: String? = null) {
     checkForUpdates(plugin, id) {
         if (it) {
-            onlinePlayers.filter { player ->
-                if (permission != null) player.isOp || player.hasPermission(permission) else player.isOp
-            }.forEach { player ->
-                player.sendMessage(message)
-            }
+            onlinePlayers
+                .withPermissionOrOp(permission)
+                .forEach { player -> player.sendMessage(message) }
         }
     }
 }
