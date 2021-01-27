@@ -10,7 +10,7 @@ internal fun Hermit.hermitCommand() = command("hermit") {
         permission = "hermit.admin.reload"
 
         execute<Player> {
-            plugin.config.reload()
+            plugin.reloadConfig()
         }
     }
 

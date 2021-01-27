@@ -1,14 +1,17 @@
 package hermit
 
 import hermit.gui.GUI
-import org.bukkit.Bukkit
-import org.bukkit.ChatColor
+import org.bukkit.*
+import org.bukkit.block.Biome
+import org.bukkit.block.Block
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.io.File
 import java.io.IOException
 import java.net.URL
 import java.text.DecimalFormat
 import java.util.*
+import kotlin.random.Random
 
 operator fun ChatColor.plus(other: String) = this.toString() + other
 
@@ -172,4 +175,25 @@ fun Double.toFormattedString(): String {
 
 fun Long.toFormattedString(): String {
     return String.format("%,d", this)
+}
+
+fun File.child(child: String) = File(this, child)
+
+fun World?.location(x: Double, y: Double, z: Double) = Location(this, x, y, z)
+
+fun Location.maxYBlock() = world.location(x, 256.0, z).block
+fun Location.minYBlock() = world.location(x, 0.0, z).block
+
+fun Location.highestBlockInColumn() = world?.getHighestBlockAt(x.toInt(), z.toInt())
+
+tailrec fun World.findRandomLocation(minX: Double, maxX: Double, minZ: Double, maxZ: Double, biomes: List<Biome>): Location {
+    val x = Random.nextDouble(minX, maxX)
+    val z = Random.nextDouble(minZ, maxZ)
+    val location = location(x, 256.0, z)
+
+    if (location.block.biome in biomes) {
+        return findRandomLocation(minX, maxX, minZ, maxZ, biomes)
+    }
+
+   return location.highestBlockInColumn()?.location ?: return findRandomLocation(minX, maxX, minZ, maxZ, biomes)
 }

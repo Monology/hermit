@@ -13,12 +13,15 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    jcenter()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots")
+    maven("https://oss.sonatype.org/content/repositories/snapshots/")
+    maven("https://repo.codemc.io/repository/maven-public/")
 }
 
 dependencies {
     shadow(kotlin("stdlib"))
-    compileOnly("org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT")
+    implementation("org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT")
 }
 
 val compileKotlin: KotlinCompile by tasks

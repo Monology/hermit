@@ -2,6 +2,7 @@ package hermit
 
 import hermit.command.CommandMessages
 import hermit.command.HermitCommand
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.util.*
@@ -13,6 +14,8 @@ abstract class HermitPlugin(var shouldAutoCreateConfig: Boolean = true) : JavaPl
     var commandMessages = CommandMessages()
         protected set
 
+    val configFile = dataFolder.child("config.yml")
+
     val commands = mutableListOf<HermitCommand>()
 
     open fun enable() {}
@@ -21,7 +24,7 @@ abstract class HermitPlugin(var shouldAutoCreateConfig: Boolean = true) : JavaPl
 
     open fun load() {}
 
-    override fun onEnable() {
+    final override fun onEnable() {
         if (shouldAutoCreateConfig && getResource("config.yml") != null) {
             saveResource("config.yml", false)
         }
@@ -29,33 +32,29 @@ abstract class HermitPlugin(var shouldAutoCreateConfig: Boolean = true) : JavaPl
         enable()
     }
 
-    val config = HermitConfiguration(file)
-
-    override fun onDisable() {
+    final override fun onDisable() {
         disable()
     }
 
-    override fun onLoad() {
+    final override fun onLoad() {
         load()
-        getConfig()
     }
 
     fun loadProperties(string: String) = Properties().apply {
         load(File(dataFolder, string).inputStream())
     }
 
-    fun loadYml(string: String): HermitConfiguration {
+    fun loadYml(string: String): YamlConfiguration {
         val file = File(dataFolder, string)
         if (!file.exists()) file.createNewFile()
         require(file.isDirectory) {
             "The file \"$string\" is a directory and therefore cannot be loaded as a YML configuration."
         }
 
-        return HermitConfiguration(file)
+        return YamlConfiguration.loadConfiguration(file)
     }
 
-    fun HermitCommand.register() {
+    fun PluginRegistrable.register() {
         register(this@HermitPlugin)
-        commands.add(this)
     }
 }

@@ -1,6 +1,7 @@
 package hermit.command
 
 import hermit.HermitPlugin
+import hermit.PluginRegistrable
 import org.bukkit.Bukkit
 import org.bukkit.Server
 import org.bukkit.command.CommandMap
@@ -16,7 +17,7 @@ class HermitCommand(
     usages: List<String>,
     private val tabCompleter: ((CommandSender, Array<String>) -> List<String>)?,
     private val execute: (CommandSender, Array<String>) -> Unit
-) : BukkitCommand(label, description, baseUsage, aliases.toList()) {
+) : BukkitCommand(label, description, baseUsage, aliases.toList()), PluginRegistrable {
     override fun execute(sender: CommandSender, commandLabel: String, args: Array<String>): Boolean {
         execute(sender, args)
         return true
@@ -26,13 +27,12 @@ class HermitCommand(
         return tabCompleter?.invoke(sender, args) ?: super.tabComplete(sender, alias, args)
     }
 
-    fun register(plugin: HermitPlugin) {
+    override fun register(plugin: HermitPlugin) {
         commandMap.register(plugin.fallbackPrefix, label, this)
+        plugin.commands.add(this)
     }
 
     init {
-        require(usages.isNotEmpty()) { "Command cannot have 0 usages." }
-
         this.description = description
         this.usage = "/$baseUsage"
         this.permission = permission
